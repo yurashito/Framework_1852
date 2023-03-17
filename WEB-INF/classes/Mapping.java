@@ -3,6 +3,11 @@ package etu1852.framework;
 public class Mapping{
     String ClassName ;
     String Method;
+    
+    public Mapping(String classeName , String method){
+        this.ClassName=classeName;
+        this.Method=method;
+    }
 
     public String getClassName(){
         return this.ClassName;
