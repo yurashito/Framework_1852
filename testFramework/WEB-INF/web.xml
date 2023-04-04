@@ -6,10 +6,6 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>Test</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/TestFramework/*</url-pattern>
     </servlet-mapping>
-
-    <domaine>
-        <nom>http://localhost:8080/Sprint1/</nom>
-    </domaine>
 </web-app>
