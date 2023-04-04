@@ -24,11 +24,11 @@ public class Utilitaire{
                     Class A=Class.forName(classe_avec_son_package);
                     Method[] emp= A.getDeclaredMethods() ;
                     Class urls= Class.forName("etu1852.annotation.Urls");
+                            System.out.println(classe_avec_son_package);
                     for(int j=0 ; j<emp.length ; j++){
                         Urls u= (Urls)emp[j].getAnnotation(urls);
                         if(emp[i].isAnnotationPresent(urls) ){
-                            System.out.println("1");
-                            resultat.put(  u.value(), new Mapping( liste[i].getName().split("\\.")[0], emp[j].getName()));
+                            resultat.put(  u.value(), new Mapping( classe_avec_son_package, emp[j].getName()));
                         }
                     }
                 }
@@ -38,20 +38,21 @@ public class Utilitaire{
     } 
 
     
-    // public static void main(String[] args){
-    //     try{
-    //         List<Mapping> resultat= new ArrayList<Mapping>();
-    //         HashMap<String,Mapping> a = new HashMap<String, Mapping>();
-    //         String pkg="\\";
-    //         File dir = new File(System.getProperty("user.dir")+"\\");
-    //         System.out.println(System.getProperty("user.dir")+"\\");
-    //         // File dir = new File("E:\\apache_tomcat9\\webapps\\Sprint3\\WEB-INF\\classes\\");
-    //         Utilitaire fonction = new Utilitaire();
-    //         // System.out.println(fonction.tout_fichier1("E:\\apache_tomcat9\\webapps\\Sprint3\\WEB-INF\\classes\\",dir , resultat).get(0).getMethod());
-    //         System.out.println(fonction.tout_fichier("E:\\apache_tomcat9\\webapps\\Sprint3\\WEB-INF\\classes\\",dir , a).get("emp-all").getClassName());
-    //     }catch(Exception e){
-    //         System.out.println(e);
-    //     }
-    // }
+    public static void main(String[] args){
+        try{
+            List<Mapping> resultat= new ArrayList<Mapping>();
+            HashMap<String,Mapping> a = new HashMap<String, Mapping>();
+            String pkg="\\";
+            File dir = new File(System.getProperty("user.dir")+"\\");
+            // System.out.println(System.getProperty("user.dir")+"\\");
+            // File dir = new File("E:\\apache_tomcat9\\webapps\\Sprint3\\WEB-INF\\classes\\");
+            Utilitaire fonction = new Utilitaire();
+            // System.out.println(fonction.tout_fichier1("E:\\apache_tomcat9\\webapps\\Sprint3\\WEB-INF\\classes\\",dir , resultat).get(0).getMethod());
+            System.out.println(fonction.tout_fichier("E:\\apache_tomcat9\\webapps\\Sprint4\\framework\\WEB-INF\\classes\\",dir , a).get("emp-all"));
+        }catch(Exception e){
+            System.out.println(e);
+        }
+    }
+
    
 }

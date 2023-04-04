@@ -1,15 +1,20 @@
 package etu1852.model;
 import  etu1852.annotation.*;
+import etu1852.framework.*;
 public class Emp{
     int id;
     String nom;
     @Urls(value="/emp-all")
-    public String findAll(){
-        return "nety lty a";
+    public ModelView findAll(){
+        ModelView view = new ModelView();
+        view.setView("../index.jsp");
+        return view;
     }
-    @Urls(value="emp-all1")
-    public String findAll1(){
-        return "nety lty a";
+    @Urls(value="/affiche")
+    public ModelView findAll1(){
+        ModelView view = new ModelView();
+        view.setView("../test.jsp");
+        return view;
     }
 
     @Urls(value="select")
