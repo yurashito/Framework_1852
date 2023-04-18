@@ -7,6 +7,6 @@ cd testFramework/WEB-INF/classes/
 javac  -cp ../lib/Framework.jar -d . *.java 
 cd ../../../
 cd testFramework/
-jar cvf testFramework22.war ./*
-move testFramework22.war ../../
+jar cvf testFramework6.war ./*
+move testFramework6.war ../../
 pause

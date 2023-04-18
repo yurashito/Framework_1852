@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.lang.reflect.*;
+import java.util.Set;
 public class FrontServlet extends HttpServlet{
     HashMap<String,Mapping> MappingUrls;
     
@@ -27,18 +28,24 @@ public class FrontServlet extends HttpServlet{
     }
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException ,Exception{
             PrintWriter out = response.getWriter();
             String url=request.getPathInfo();  
             try {
-                out.println("resultat : "+MappingUrls.get(url).getClassName());
-                out.println("resultat : "+MappingUrls.get(url).getMethod());
-                out.println("url : "+url);
+                // out.println("resultat : "+MappingUrls.get(url).getClassName());
+                // out.println("resultat : "+MappingUrls.get(url).getMethod());
+                // out.println("url : "+url);
                 Class A=Class.forName(MappingUrls.get(url).getClassName());
                 Method method=A.getMethod(MappingUrls.get(url).getMethod());
                 Object objet=  A.newInstance();
                 ModelView afficher= (ModelView)method.invoke(objet);
-                out.println(afficher.getView());
+
+                Set<String> keys = afficher.getData().keySet();  
+                String[] keysArray = keys.toArray(new String[keys.size()]);
+                for(int i=0 ; i<keysArray.length ; i++){
+                        request.setAttribute(keysArray[i] ,  afficher.getData().get(keysArray[i]));
+                }
+
                 //  response.sendRedirect("index.jsp");
                 RequestDispatcher dispat = request.getRequestDispatcher(afficher.getView());
                 dispat.forward(request, response);

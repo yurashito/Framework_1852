@@ -1,3 +1,4 @@
+<%@page import="java.util.*"%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,6 +8,7 @@
     <title>Document</title>
 </head>
 <body>
-    <h1> huhuhuhuhuuhuuhuh</h1>
+    <%= request.getAttribute("liste")  %>
+    <h1> huhuhuhuhuuhuuhuh </h1>
 </body>
 </html>
