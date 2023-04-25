@@ -32,23 +32,36 @@ public class FrontServlet extends HttpServlet{
             PrintWriter out = response.getWriter();
             String url=request.getPathInfo();  
             try {
-                // out.println("resultat : "+MappingUrls.get(url).getClassName());
-                // out.println("resultat : "+MappingUrls.get(url).getMethod());
-                // out.println("url : "+url);
+                
                 Class A=Class.forName(MappingUrls.get(url).getClassName());
                 Method method=A.getMethod(MappingUrls.get(url).getMethod());
                 Object objet=  A.newInstance();
-                ModelView afficher= (ModelView)method.invoke(objet);
+                String test= new String();
 
-                Set<String> keys = afficher.getData().keySet();  
-                String[] keysArray = keys.toArray(new String[keys.size()]);
-                for(int i=0 ; i<keysArray.length ; i++){
-                        request.setAttribute(keysArray[i] ,  afficher.getData().get(keysArray[i]));
+                for(int i=0 ; i< A.getDeclaredFields().length ; i++){
+                    Object[] tableau = new Object[1];
+                    tableau[0]= request.getParameter(A.getDeclaredFields()[i].getName());
+                    System.out.println(A.getDeclaredFields()[i].getType());
+                    Method meth= A.getMethod("set"+A.getDeclaredFields()[i].getName() ,test.getClass());
+                    meth.invoke(objet , request.getParameter(A.getDeclaredFields()[i].getName()));
+                    Method meth1= A.getMethod("get"+A.getDeclaredFields()[i].getName() );
+                    System.out.println(meth1.invoke(objet ));
+                    // System.out.println(request.getParameter(A.getDeclaredFields()[i].getName()));
                 }
 
+                System.out.println(method.invoke(objet));
+
+                // ModelView afficher= (ModelView)method.invoke(objet);
+
+                // Set<String> keys = afficher.getData().keySet();  
+                // String[] keysArray = keys.toArray(new String[keys.size()]);
+                // for(int i=0 ; i<keysArray.length ; i++){
+                //         request.setAttribute(keysArray[i] ,  afficher.getData().get(keysArray[i]));
+                // }
+
                 //  response.sendRedirect("index.jsp");
-                RequestDispatcher dispat = request.getRequestDispatcher(afficher.getView());
-                dispat.forward(request, response);
+                // RequestDispatcher dispat = request.getRequestDispatcher(afficher.getView());
+                // dispat.forward(request, response);
 
             }catch (Exception e){
                 out.println("ce cle n'existe pas , veillez verifie");

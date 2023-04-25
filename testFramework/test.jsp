@@ -10,5 +10,8 @@
 <body>
     <%= request.getAttribute("liste")  %>
     <h1> huhuhuhuhuuhuuhuh </h1>
+    <form action="a">
+
+    </form>
 </body>
 </html>

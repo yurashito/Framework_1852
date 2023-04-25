@@ -4,9 +4,30 @@ import etu1852.framework.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.lang.*;
 public class Emp{
-    int id;
-    String nom;
+    int Id;
+    String Nom;
+
+    @Urls(value="/setId")
+    public void setId(String id){
+        this.Id=Integer.parseInt(id);
+    }
+    @Urls(value="/setNom")
+    public void setNom(String nom){
+        this.Nom=nom;
+    }
+
+    @Urls(value="/getId")
+    public int getId(){
+        return this.Id;
+    }
+    @Urls(value="/getNom")
+
+    public String getNom(){
+        return this.Nom;
+    }
+
     @Urls(value="/emp-all")
     public ModelView findAll(){
         ModelView view = new ModelView();
@@ -27,8 +48,8 @@ public class Emp{
         return view;
     }
 
-    @Urls(value="select")
+    @Urls(value="/select")
     public String select(){
-        return "select" ;
+        return "select "+this.Nom+" "+this.Id ;
     }
 }

@@ -7,6 +7,12 @@
     <title>Document</title>
 </head>
 <body>
-    <a href="kookok"> lien</a>
+    <a href="TestFramework/emp-all"> lien11</a>
+    <form action="TestFramework/emp-all">
+        <p>Id: <input type="text" name="Id" ></p>
+        <p>Nom: <input type="text" name="Nom" ></p>
+        <p> <input type="submit" value="ok" ></p>
+    </form>
+
 </body>
 </html>
