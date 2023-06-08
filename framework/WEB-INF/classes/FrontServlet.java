@@ -13,6 +13,14 @@ import java.lang.reflect.*;
 import java.util.Set;
 import java.lang.*;
 import java.util.Enumeration;
+import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.http.Part;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+@MultipartConfig(maxFileSize=20000000)
 public class FrontServlet extends HttpServlet{
     HashMap<String,Mapping> MappingUrls;
     
@@ -51,17 +59,33 @@ public class FrontServlet extends HttpServlet{
                                 Class type_attribut=A.getDeclaredFields()[i].getType();
                                 Method meth;
                                 String nom_attribut=A.getDeclaredFields()[i].getName();
+
+                //-----------------------traitement pour l'upload----------------------------
+                                if( type_attribut.getSimpleName().equals("FileUpload")){
+                                    Part filepart= request.getPart("Fichier");
+                                    
+                                    if(filepart!= null){
+                                        String filename= filepart.getSubmittedFileName();
+                                        byte[] filebyte= new byte[(int) filepart.getSize()];
+                                        filepart.getInputStream().read(filebyte);
+                                        FileUpload file_uplaod= new FileUpload(filename , filebyte);
+                                        meth= A.getMethod("set"+nom_attribut ,type_attribut); 
+                                        meth.invoke(objet , file_uplaod);
+                                    }
+                                }
                                 if(request.getParameter(nom_attribut)!=null){
                                     if(type_attribut.getSimpleName().equals("int")){ 
                                         meth= A.getMethod("set"+nom_attribut ,type_attribut); 
                                         meth.invoke(objet , Integer.parseInt(request.getParameter(nom_attribut)));
                                     }else if(type_attribut.getSimpleName().equals("String")){ 
+
                                         meth= A.getMethod("set"+nom_attribut ,type_attribut);
                                         meth.invoke(objet , request.getParameter(nom_attribut));
                                     }else if(type_attribut.getSimpleName().equals("double")){  
                                         meth= A.getMethod("set"+nom_attribut ,type_attribut);
                                         meth.invoke(objet , Double.parseDouble(request.getParameter(nom_attribut)));
-                                    }
+                                    } 
+                        
                                     else { 
                                         meth= A.getMethod("set"+nom_attribut ,type_attribut);
                                         meth.invoke(objet , function.string_en_date(request.getParameter( nom_attribut)));
