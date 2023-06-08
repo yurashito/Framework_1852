@@ -8,7 +8,7 @@
 </head>
 <body>
     <a href="TestFramework/emp-all"> lien11</a>
-    <form action="http://localhost:8082/testFramework6/TestFramework/select">
+    <form action="http://localhost:8082/testFramework6/select.do">
         <p>Id: <input type="text" name="Id" ></p>
         <p>Nom: <input type="text" name="Nom" ></p>
         <p> <input type="submit" value="ok" ></p>
@@ -16,6 +16,6 @@
 
 
 
-    <a href="TestFramework/emp-all?hihi=1"> lien11</a>
+    <a href="emp-all.do?hihi=1"> lien11</a>
 </body>
 </html>

@@ -6,6 +6,6 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>Test</servlet-name>
-        <url-pattern>/TestFramework/*</url-pattern>
+        <url-pattern>*.do</url-pattern>
     </servlet-mapping>
 </web-app>
