@@ -33,13 +33,13 @@ public class FrontServlet extends HttpServlet{
             throws ServletException, IOException ,Exception{
             
             PrintWriter out = response.getWriter();
-            String url=request.getPathInfo();
+            String url=request.getRequestURI().replace(request.getContextPath() , "");
             Utilitaire function = new Utilitaire();    
 
             try {
                 
-                Class A = Class.forName(MappingUrls.get(url).getClassName());  
-                
+                Class A = Class.forName(MappingUrls.get(url).getClassName());
+
                 // rechercher toutes les methodes dans la class
                 Method[] methods = A.getDeclaredMethods();  
                 for (int j=0 ; j<methods.length ; j++) {
@@ -61,17 +61,16 @@ public class FrontServlet extends HttpServlet{
                                     }else if(type_attribut.getSimpleName().equals("double")){  
                                         meth= A.getMethod("set"+nom_attribut ,type_attribut);
                                         meth.invoke(objet , Double.parseDouble(request.getParameter(nom_attribut)));
-                                    }else { 
+                                    }
+                                    else { 
                                         meth= A.getMethod("set"+nom_attribut ,type_attribut);
                                         meth.invoke(objet , function.string_en_date(request.getParameter( nom_attribut)));
                                     }
                                 }
                                 Method meth1= A.getMethod("get"+nom_attribut );
-                                out.println(meth1.invoke(objet ));
                             }
-                            out.println(method.invoke(objet));
                         }else{
-                                                    if(request.getParameterMap().size() ==  methods[j].getParameterCount()){
+                            if(request.getParameterMap().size() ==  methods[j].getParameterCount()){
                                 Object[] tableau_d_argument = new Object[methods[j].getParameterCount()];
                                 Enumeration<String> parameterNames = request.getParameterNames();
                                 int i=0 ; 
@@ -110,27 +109,11 @@ public class FrontServlet extends HttpServlet{
                         RequestDispatcher dispat = request.getRequestDispatcher(afficher.getView());
                         dispat.forward(request, response);
 
-
                     }
 
                 }
                 
                 
-             
-
-
-                // ModelView afficher= (ModelView)method.invoke(objet);
-
-                // Set<String> keys = afficher.getData().keySet();  
-                // String[] keysArray = keys.toArray(new String[keys.size()]);
-                // for(int i=0 ; i<keysArray.length ; i++){
-                //         request.setAttribute(keysArray[i] ,  afficher.getData().get(keysArray[i]));
-                // }
-
-             
-                // RequestDispatcher dispat = request.getRequestDispatcher(afficher.getView());
-                // dispat.forward(request, response);
-
             }catch (Exception e){
                 out.println("ce cle n'existe pas , veillez verifie");
                 out.println(e);
