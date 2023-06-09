@@ -10,8 +10,9 @@ public class Emp{
     String Nom;
 
     @Urls(value="/setId")
-    public void setId(String id){
-        this.Id=Integer.parseInt(id);
+    public void setId(int id){
+        // this.Id=Integer.parseInt(id);
+        this.Id=id;
     }
     @Urls(value="/setNom")
     public void setNom(String nom){
@@ -22,8 +23,8 @@ public class Emp{
     public int getId(){
         return this.Id;
     }
-    @Urls(value="/getNom")
 
+    @Urls(value="/getNom")
     public String getNom(){
         return this.Nom;
     }
@@ -40,10 +41,8 @@ public class Emp{
         view.setData(new HashMap<String , Object>());
         view.setView("../test.jsp");
         List<String> liste= new ArrayList<String>();
-        liste.add("fehizoro");
-        liste.add("Stephane");
-        liste.add("Noah");
-        liste.add("Thony");
+        liste.add(this.Id+"");
+        liste.add(this.Nom+"");
         view.addItem("liste" , liste);
         return view;
     }
@@ -51,5 +50,22 @@ public class Emp{
     @Urls(value="/select")
     public String select(){
         return "select "+this.Nom+" "+this.Id ;
+    }
+
+    @Urls(value="/sprint8")
+    public String sprint8( String test){
+        return test ;
+    }
+
+    @Urls(value="/affiche1")
+    public ModelView findA() throws Exception{
+        ModelView view = new ModelView();
+        view.setData(new HashMap<String , Object>());
+        view.setView("../index.jsp");
+        // List<String> liste= new ArrayList<String>();
+        // liste.add(this.Id+"");
+        // liste.add(this.Nom+"");
+        // view.addItem("liste" , liste);
+        return view;
     }
 }

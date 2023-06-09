@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.lang.reflect.*;
 import java.util.Set;
+import java.lang.*;
+import java.util.Enumeration;
 public class FrontServlet extends HttpServlet{
     HashMap<String,Mapping> MappingUrls;
     
@@ -29,27 +31,93 @@ public class FrontServlet extends HttpServlet{
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException ,Exception{
+            
             PrintWriter out = response.getWriter();
-            String url=request.getPathInfo();  
+            String url=request.getPathInfo();
+            Utilitaire function = new Utilitaire();    
+
             try {
                 
-                Class A=Class.forName(MappingUrls.get(url).getClassName());
-                Method method=A.getMethod(MappingUrls.get(url).getMethod());
-                Object objet=  A.newInstance();
-                String test= new String();
+                Class A = Class.forName(MappingUrls.get(url).getClassName());  
+                
+                // rechercher toutes les methodes dans la class
+                Method[] methods = A.getDeclaredMethods();  
+                for (int j=0 ; j<methods.length ; j++) {
+                    if(methods[j].getName().equals(MappingUrls.get(url).getMethod())  ){
+                        Method method= methods[j];
+                        Object objet =  A.newInstance();
+                        if( methods[j].getParameterCount()==0){
+                            for(int i=0 ; i< A.getDeclaredFields().length ; i++){
+                                Class type_attribut=A.getDeclaredFields()[i].getType();
+                                Method meth;
+                                String nom_attribut=A.getDeclaredFields()[i].getName();
+                                if(request.getParameter(nom_attribut)!=null){
+                                    if(type_attribut.getSimpleName().equals("int")){ 
+                                        meth= A.getMethod("set"+nom_attribut ,type_attribut); 
+                                        meth.invoke(objet , Integer.parseInt(request.getParameter(nom_attribut)));
+                                    }else if(type_attribut.getSimpleName().equals("String")){ 
+                                        meth= A.getMethod("set"+nom_attribut ,type_attribut);
+                                        meth.invoke(objet , request.getParameter(nom_attribut));
+                                    }else if(type_attribut.getSimpleName().equals("double")){  
+                                        meth= A.getMethod("set"+nom_attribut ,type_attribut);
+                                        meth.invoke(objet , Double.parseDouble(request.getParameter(nom_attribut)));
+                                    }else { 
+                                        meth= A.getMethod("set"+nom_attribut ,type_attribut);
+                                        meth.invoke(objet , function.string_en_date(request.getParameter( nom_attribut)));
+                                    }
+                                }
+                                Method meth1= A.getMethod("get"+nom_attribut );
+                                out.println(meth1.invoke(objet ));
+                            }
+                            out.println(method.invoke(objet));
+                        }else{
+                                                    if(request.getParameterMap().size() ==  methods[j].getParameterCount()){
+                                Object[] tableau_d_argument = new Object[methods[j].getParameterCount()];
+                                Enumeration<String> parameterNames = request.getParameterNames();
+                                int i=0 ; 
+                                // Boucler sur tous les paramètres de la requête
+                                while (parameterNames.hasMoreElements()) {
+                                    // Récupérer le nom du paramètre
+                                    String paramName = parameterNames.nextElement();
+                                    // Récupérer la valeur du paramètre
+                                    String paramValue = request.getParameter(paramName);
+                    
+                                    Class type_argument= methods[j].getParameters()[i].getType();                                
+                                    if(type_argument.getSimpleName().equals("int")){ 
+                                        tableau_d_argument[i]=Integer.parseInt(paramValue);;
+                                    }else if(type_argument.getSimpleName().equals("String")){ 
+                                        tableau_d_argument[i]= paramValue;
+                                    }else if(type_argument.getSimpleName().equals("double")){  
+                                        tableau_d_argument[i]= Double.parseDouble(paramValue);
+                                    }else { 
+                                        tableau_d_argument[i]=function.string_en_date(request.getParameter( paramValue));
+                                    }
+                                    i++;
+                                }                             
+                                out.println(method.invoke(objet  , tableau_d_argument));
+                                break;
 
-                for(int i=0 ; i< A.getDeclaredFields().length ; i++){
-                    Object[] tableau = new Object[1];
-                    tableau[0]= request.getParameter(A.getDeclaredFields()[i].getName());
-                    System.out.println(A.getDeclaredFields()[i].getType());
-                    Method meth= A.getMethod("set"+A.getDeclaredFields()[i].getName() ,test.getClass());
-                    meth.invoke(objet , request.getParameter(A.getDeclaredFields()[i].getName()));
-                    Method meth1= A.getMethod("get"+A.getDeclaredFields()[i].getName() );
-                    System.out.println(meth1.invoke(objet ));
-                    // System.out.println(request.getParameter(A.getDeclaredFields()[i].getName()));
+                            }
+
+                        }
+                                
+                        ModelView afficher= (ModelView)method.invoke(objet);
+                        Set<String> keys = afficher.getData().keySet();  
+                        String[] keysArray = keys.toArray(new String[keys.size()]);
+                        for(int i=0 ; i<keysArray.length ; i++){
+                                request.setAttribute(keysArray[i] ,  afficher.getData().get(keysArray[i]));
+                        }
+                        RequestDispatcher dispat = request.getRequestDispatcher(afficher.getView());
+                        dispat.forward(request, response);
+
+
+                    }
+
                 }
+                
+                
+             
 
-                System.out.println(method.invoke(objet));
 
                 // ModelView afficher= (ModelView)method.invoke(objet);
 
@@ -59,7 +127,7 @@ public class FrontServlet extends HttpServlet{
                 //         request.setAttribute(keysArray[i] ,  afficher.getData().get(keysArray[i]));
                 // }
 
-                //  response.sendRedirect("index.jsp");
+             
                 // RequestDispatcher dispat = request.getRequestDispatcher(afficher.getView());
                 // dispat.forward(request, response);
 
