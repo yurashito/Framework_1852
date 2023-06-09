@@ -11,6 +11,11 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.io.FileOutputStream;
 public class Utilitaire{
     public String url(String url) throws Exception{    
         String supprime_le_baseurl=url.split("\\?")[0];
@@ -28,10 +33,11 @@ public class Utilitaire{
                     Class A=Class.forName(classe_avec_son_package);
                     Method[] emp= A.getDeclaredMethods() ;
                     Class urls= Class.forName("etu1852.annotation.Urls");
-                            System.out.println(classe_avec_son_package);
+                            System.out.println("---------------------"+classe_avec_son_package+" : "+emp.length);
                     for(int j=0 ; j<emp.length ; j++){
                         Urls u= (Urls)emp[j].getAnnotation(urls);
-                        if(emp[i].isAnnotationPresent(urls) ){
+    
+                        if(emp[j].isAnnotationPresent(urls) ){
                             resultat.put(  u.value(), new Mapping( classe_avec_son_package, emp[j].getName()));
                         }
                     }
@@ -48,6 +54,16 @@ public class Utilitaire{
         return dt;
     }
 
+    public static void uploadFichier(String emplacement ,String filename ,byte[] tableauByte) {
+        try (FileOutputStream fos = new FileOutputStream(emplacement+filename)) {
+            fos.write(tableauByte);
+            fos.close();
+            System.out.println("Fichier créé avec succès !");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     
     public static void main(String[] args){
         try{
@@ -55,14 +71,16 @@ public class Utilitaire{
             System.out.println(util.string_en_date("2023-04-25"));
 
             // List<Mapping> resultat= new ArrayList<Mapping>();
-            // HashMap<String,Mapping> a = new HashMap<String, Mapping>();
+            HashMap<String,Mapping> a = new HashMap<String, Mapping>();
             // String pkg="\\";
+            File dir = new File("E:\\apache_tomcat9\\webapps\\Sprint8_bis - Copie\\testFramework\\WEB-INF\\classes\\");
             // File dir = new File(System.getProperty("user.dir")+"\\");
+            
             // // System.out.println(System.getProperty("user.dir")+"\\");
             // // File dir = new File("E:\\apache_tomcat9\\webapps\\Sprint3\\WEB-INF\\classes\\");
-            // Utilitaire fonction = new Utilitaire();
-            // // System.out.println(fonction.tout_fichier1("E:\\apache_tomcat9\\webapps\\Sprint3\\WEB-INF\\classes\\",dir , resultat).get(0).getMethod());
-            // System.out.println(fonction.tout_fichier("E:\\apache_tomcat9\\webapps\\Sprint4\\framework\\WEB-INF\\classes\\",dir , a).get("emp-all"));
+            Utilitaire fonction = new Utilitaire();
+            // System.out.println(fonction.tout_fichier1("E:\\apache_tomcat9\\webapps\\Sprint3\\WEB-INF\\classes\\",dir , resultat).get(0).getMethod());
+            System.out.println(fonction.tout_fichier("E:\\apache_tomcat9\\webapps\\Sprint8_bis - Copie\\testFramework\\WEB-INF\\classes\\",dir , a));
         }catch(Exception e){
             System.out.println(e);
         }
