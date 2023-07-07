@@ -1,5 +1,5 @@
 set path_tomcat= E:\apache_tomcat9\webapps\
-set path_actuel=E:\Sprint10\
+set path_actuel=E:\Sprint11\
 
 rmdir /s /q test_framework
 mkdir test_framework

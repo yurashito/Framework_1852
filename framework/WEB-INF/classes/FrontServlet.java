@@ -2,6 +2,7 @@ package etu1852.framework.servlet;
 import  etu1852.framework.*;
 import fonction.*;
 import java.io.*;
+import javax.servlet.http.HttpSession;
 import javax.servlet.ServletException;
 import javax.servlet.ServletConfig;
 import javax.servlet.*;
@@ -26,7 +27,14 @@ public class FrontServlet extends HttpServlet{
     HashMap<String , Object> ClassSingleton;
     
 
-    public void init() throws ServletException {
+    public void init( ServletConfig config) throws ServletException {
+        super.init(config);
+        String sessionMaxInactiveInterval = config.getInitParameter("isConnected");
+        System.out.println(sessionMaxInactiveInterval+"0000+++++++-------------------");
+       
+
+
+
         ServletContext context = getServletContext();
         String chemin_de_l_application = context.getRealPath("/");
         File file= new File(chemin_de_l_application+"WEB-INF\\classes\\");
@@ -41,8 +49,8 @@ public class FrontServlet extends HttpServlet{
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException ,Exception{
-            
             PrintWriter out = response.getWriter();
+            HttpSession session= request.getSession();    
             String url=request.getRequestURI().replace(request.getContextPath() , "");
             Utilitaire function = new Utilitaire();    
 
@@ -62,7 +70,8 @@ public class FrontServlet extends HttpServlet{
                                     objet=A.newInstance();
                                     ClassSingleton.put(A.getName() ,objet);
                                 }else{
-                                    objet=ClassSingleton.get(A.getName()) ;                                    
+                                    objet=ClassSingleton.get(A.getName()) ;  
+                                    function.mettre_par_defaut_les_attributs(A.getDeclaredFields() , objet);                                  
                                 }
                             }else{
                                 objet =  A.newInstance();
@@ -70,7 +79,6 @@ public class FrontServlet extends HttpServlet{
                                 ClassSingleton.put(A.getName() ,objet);
                             }
                         }else{
-                            System.out.println("mbola misy");
                             objet =  A.newInstance();
                         }
                     
@@ -82,37 +90,21 @@ public class FrontServlet extends HttpServlet{
                                 Class type_attribut=A.getDeclaredFields()[i].getType();
                                 Method meth;
                                 String nom_attribut=A.getDeclaredFields()[i].getName();
-
                 //-----------------------traitement pour l'upload----------------------------
                                 if( type_attribut.getSimpleName().equals("FileUpload")){
                                     Part filepart= request.getPart("Fichier");
-                                    
                                     if(filepart!= null){
                                         String filename= filepart.getSubmittedFileName();
                                         byte[] filebyte= new byte[(int) filepart.getSize()];
                                         filepart.getInputStream().read(filebyte);
                                         FileUpload file_uplaod= new FileUpload(filename , filebyte);
-                                        meth= A.getMethod("set"+nom_attribut ,type_attribut); 
+                                        meth= A.getMethod("set"+nom_attribut ,type_attribut);
                                         meth.invoke(objet , file_uplaod);
                                     }
                                 }
+                //--------------------------------------------------------------------------------
                                 if(request.getParameter(nom_attribut)!=null){
-                                    if(type_attribut.getSimpleName().equals("int")){ 
-                                        meth= A.getMethod("set"+nom_attribut ,type_attribut); 
-                                        meth.invoke(objet , Integer.parseInt(request.getParameter(nom_attribut)));
-                                    }else if(type_attribut.getSimpleName().equals("String")){ 
-
-                                        meth= A.getMethod("set"+nom_attribut ,type_attribut);
-                                        meth.invoke(objet , request.getParameter(nom_attribut));
-                                    }else if(type_attribut.getSimpleName().equals("double")){  
-                                        meth= A.getMethod("set"+nom_attribut ,type_attribut);
-                                        meth.invoke(objet , Double.parseDouble(request.getParameter(nom_attribut)));
-                                    } 
-                        
-                                    else { 
-                                        meth= A.getMethod("set"+nom_attribut ,type_attribut);
-                                        meth.invoke(objet , function.string_en_date(request.getParameter( nom_attribut)));
-                                    }
+                                    function.donne_un_valeur_a_un_attribut(  nom_attribut ,  type_attribut ,  objet ,  request.getParameter( nom_attribut)  , session.getAttribute(getServletConfig().getInitParameter("isConnected")) ,  session.getAttribute(getServletConfig().getInitParameter("isConnected")) );
                                 }
                                 Method meth1= A.getMethod("get"+nom_attribut );
                             }
@@ -127,7 +119,6 @@ public class FrontServlet extends HttpServlet{
                                     String paramName = parameterNames.nextElement();
                                     // Récupérer la valeur du paramètre
                                     String paramValue = request.getParameter(paramName);
-                    
                                     Class type_argument= methods[j].getParameters()[i].getType();                                
                                     if(type_argument.getSimpleName().equals("int")){ 
                                         tableau_d_argument[i]=Integer.parseInt(paramValue);;
@@ -142,17 +133,28 @@ public class FrontServlet extends HttpServlet{
                                 }                             
                                 out.println(method.invoke(objet  , tableau_d_argument));
                                 break;
-
                             }
-
                         }
-                                
-                        ModelView afficher= (ModelView)method.invoke(objet);
+                        ModelView afficher= null;
+                        Class classAuth= Class.forName("etu1852.annotation.Auth");
+                        if(verificationExistence(method) &&  method.getAnnotation(classAuth)==session.getAttribute(getServletConfig().getInitParameter("isConnected") )){
+                            afficher= (ModelView)method.invoke(objet);
+                        }
+                        if( verificationExistence(method)== false){
+                            afficher= (ModelView)method.invoke(objet);
+                        }
+
                         Set<String> keys = afficher.getData().keySet();  
                         String[] keysArray = keys.toArray(new String[keys.size()]);
                         for(int i=0 ; i<keysArray.length ; i++){
-                                request.setAttribute(keysArray[i] ,  afficher.getData().get(keysArray[i]));
+                            request.setAttribute(keysArray[i] ,  afficher.getData().get(keysArray[i]));
                         }
+                        Set<String> cleSession = afficher.getSession().keySet();
+                        String[] tableau_cle_session = cleSession.toArray(new String[cleSession.size()]); 
+                        for(int i=0 ; i<tableau_cle_session.length ; i++){
+                            session.setAttribute(tableau_cle_session[i] ,  afficher.getSession().get(tableau_cle_session[i]));
+                        }
+                      
                         RequestDispatcher dispat = request.getRequestDispatcher(afficher.getView());
                         dispat.forward(request, response);
 
@@ -185,6 +187,14 @@ public class FrontServlet extends HttpServlet{
         } catch (Exception e) {
             out.println(e);
         }
+    }
+
+    public boolean verificationExistence(Method meth )throws Exception{
+        Class classAuth= Class.forName("etu1852.annotation.Auth");
+        if(meth.isAnnotationPresent(classAuth)){
+            return true ;
+        }
+        return false;
     }
 
 }

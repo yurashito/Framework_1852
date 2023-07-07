@@ -13,7 +13,13 @@ import java.io.IOException;
 
 @Singleton
 public class Emp{
-   
+    int A;
+    int B; 
+    public int getA(){ return A; }
+    public int getB(){ return B; }
+    public void setA(int A){ this.A= A ; }
+    public void setB(int B){ this.B= B ; }
+
     // public FileUpload getFichier(){
     //     return this.Fichier;
     // }
@@ -23,19 +29,26 @@ public class Emp{
 
     
     
-    // @Urls(value="/upload1.do")
-    // public ModelView Upload_fichier(){
+    @Urls(value="/up.do")
+    public ModelView setId() throws Exception{
+        ModelView view = new ModelView();
+        view.setData(new HashMap<String , Object>());
+        System.out.println(A+"  "+B);
+        view.addItem("liste" , "a :"+A+" b: "+B);
+        view.setView("index.jsp");
+        return view;
+    }
 
-    //     Fichier.uploadFichier( "E:\\apache_tomcat9\\webapps\\Sprint8_bis - Copie\\upload\\");
-    //     ModelView view = new ModelView();
-    //     view.setData(new HashMap<String , Object>());
-    //     view.setView("index.jsp");
-    //     return view;
-    // }
-
-    // @Urls(value="/setiii.do")
-    // public void setId(int id){
-    //     // this.Id=Integer.parseInt(id);
-    //     // this.Id=id;
-    // }
+    @Urls(value="/login.do")
+    public ModelView Login() throws Exception{
+        ModelView view = new ModelView();
+        view.setData(new HashMap<String , Object>());
+        view.setSession(new HashMap<String , Object>());
+        view.addSession("isConnected" , true);
+        view.addSession("profil" , "admin");
+        System.out.println();
+        view.addItem("liste" , "a :"+A+" b: "+B);
+        view.setView("index.jsp");
+        return view;
+    }
 }

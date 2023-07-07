@@ -5,6 +5,7 @@ import java.util.*;
 public class ModelView{
     String View ;
     HashMap<String , Object> Data;
+    HashMap<String , Object> Session;
 
     public  HashMap<String , Object> getData(){
         return this.Data;
@@ -22,8 +23,19 @@ public class ModelView{
         this.View= view;
     }
 
+    public void  setSession( HashMap<String , Object> Session){
+        this.Session = Session;
+    }
+
     public void addItem(String cle,Object objet) throws Exception{
         this.Data.put( cle , objet );
+    }
+
+    public void addSession(String cle,Object objet) throws Exception{
+        this.Session.put( cle , objet );
+    }
+    public HashMap<String , Object> getSession(){
+        return this.Session;
     }
 
     public static void main(String[] args){

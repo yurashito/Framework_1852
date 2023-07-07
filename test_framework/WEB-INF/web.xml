@@ -3,9 +3,24 @@
     <servlet>
         <servlet-name>Test</servlet-name>
         <servlet-class>etu1852.framework.servlet.FrontServlet</servlet-class>
+
+        <init-param> 
+            <param-name>  isConnected </param-name>
+            <param-value> isConnected </param-value>
+            <param-description> cle pour le hashmap qui determine le profil d'une personne </param-description>
+        </init-param> 
+        
+        <init-param> 
+            <param-name> profil </param-name>
+            <param-value> admin </param-value>
+        </init-param> 
+
+
+
     </servlet>
     <servlet-mapping>
         <servlet-name>Test</servlet-name>
         <url-pattern>*.do</url-pattern>
     </servlet-mapping>
+   
 </web-app>
