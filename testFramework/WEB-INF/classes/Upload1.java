@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+@Singleton
 public class Upload1{
     FileUpload Fichier;
     public FileUpload getFichier(){
@@ -25,7 +26,7 @@ public class Upload1{
     @Urls(value="/upload1.do")
     public ModelView Upload_fichier(){
 
-        Fichier.uploadFichier( "E:\\apache_tomcat9\\webapps\\Sprint8_bis - Copie\\upload\\");
+        Fichier.uploadFichier( "E:\\sprint10\\upload\\");
         ModelView view = new ModelView();
         view.setData(new HashMap<String , Object>());
         view.setView("index.jsp");
