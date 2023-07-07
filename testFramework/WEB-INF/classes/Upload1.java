@@ -26,7 +26,7 @@ public class Upload1{
     @Urls(value="/upload1.do")
     public ModelView Upload_fichier(){
 
-        Fichier.uploadFichier( "E:\\sprint10\\upload\\");
+        Fichier.uploadFichier( "E:\\sprint12\\upload\\");
         ModelView view = new ModelView();
         view.setData(new HashMap<String , Object>());
         view.setView("index.jsp");
