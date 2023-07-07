@@ -23,6 +23,7 @@ import java.nio.file.Paths;
 @MultipartConfig(maxFileSize=20000000)
 public class FrontServlet extends HttpServlet{
     HashMap<String,Mapping> MappingUrls;
+    HashMap<String , Object> ClassSingleton;
     
 
     public void init() throws ServletException {
@@ -30,8 +31,9 @@ public class FrontServlet extends HttpServlet{
         String chemin_de_l_application = context.getRealPath("/");
         File file= new File(chemin_de_l_application+"WEB-INF\\classes\\");
         Utilitaire function = new Utilitaire();
+        ClassSingleton= new HashMap<String , Object>();
         try{
-            MappingUrls= function.tout_fichier(chemin_de_l_application+"WEB-INF\\classes\\" , file , new HashMap<String,Mapping>());
+            MappingUrls= function.tout_fichier(chemin_de_l_application+"WEB-INF\\classes\\" , file , new HashMap<String,Mapping>()  , ClassSingleton);
         }catch(Exception e){
             System.out.println(e);
         }
@@ -53,7 +55,28 @@ public class FrontServlet extends HttpServlet{
                 for (int j=0 ; j<methods.length ; j++) {
                     if(methods[j].getName().equals(MappingUrls.get(url).getMethod())  ){
                         Method method= methods[j];
-                        Object objet =  A.newInstance();
+                        Object objet= null;
+                        if(function.verificationSingleton(A.getName() , ClassSingleton)){
+                            if( ClassSingleton!=null ){
+                                if( ClassSingleton.containsKey(A.getName())== false){
+                                    objet=A.newInstance();
+                                    ClassSingleton.put(A.getName() ,objet);
+                                }else{
+                                    objet=ClassSingleton.get(A.getName()) ;                                    
+                                }
+                            }else{
+                                objet =  A.newInstance();
+                                ClassSingleton= new HashMap<String , Object>();
+                                ClassSingleton.put(A.getName() ,objet);
+                            }
+                        }else{
+                            System.out.println("mbola misy");
+                            objet =  A.newInstance();
+                        }
+                    
+
+
+
                         if( methods[j].getParameterCount()==0){
                             for(int i=0 ; i< A.getDeclaredFields().length ; i++){
                                 Class type_attribut=A.getDeclaredFields()[i].getType();
