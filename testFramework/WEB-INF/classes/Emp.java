@@ -51,4 +51,14 @@ public class Emp{
         view.setView("index.jsp");
         return view;
     }
+
+    @RestAPI
+     @Urls(value="/Liste.do")
+    public String[] Liste(){
+        String[] resultat= new String[3];
+        resultat[0]="fehizoro";
+        resultat[1]="fehizoro";
+        resultat[2]="fehizoro";
+        return resultat;
+    }
 }
