@@ -6,6 +6,15 @@ public class ModelView{
     String View ;
     HashMap<String , Object> Data;
     HashMap<String , Object> Session;
+    boolean IsJson= false;
+    
+    public void setIsJson(boolean IsJson){
+        this.IsJson = IsJson;
+    }
+    
+    public boolean getIsJson(){
+        return this.IsJson;
+    }
 
     public  HashMap<String , Object> getData(){
         return this.Data;

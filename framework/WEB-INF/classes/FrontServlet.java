@@ -1,5 +1,6 @@
 package etu1852.framework.servlet;
 import  etu1852.framework.*;
+import com.google.gson.Gson;
 import fonction.*;
 import java.io.*;
 import javax.servlet.http.HttpSession;
@@ -52,6 +53,7 @@ public class FrontServlet extends HttpServlet{
             PrintWriter out = response.getWriter();
             HttpSession session= request.getSession();    
             String url=request.getRequestURI().replace(request.getContextPath() , "");
+            
             Utilitaire function = new Utilitaire();    
 
             try {
@@ -144,19 +146,33 @@ public class FrontServlet extends HttpServlet{
                             afficher= (ModelView)method.invoke(objet);
                         }
 
-                        Set<String> keys = afficher.getData().keySet();  
-                        String[] keysArray = keys.toArray(new String[keys.size()]);
-                        for(int i=0 ; i<keysArray.length ; i++){
-                            request.setAttribute(keysArray[i] ,  afficher.getData().get(keysArray[i]));
+                        if(afficher.getIsJson()){
+                            out.println("transformation 000000en json");
+                            Gson gson = new Gson();
+                            String json = gson.toJson(afficher.getData());
+                            out.println(json);
+                            request.setAttribute("json" ,  json);
+
+                        } else{
+
+                            Set<String> keys = afficher.getData().keySet();  
+                            String[] keysArray = keys.toArray(new String[keys.size()]);
+                            for(int i=0 ; i<keysArray.length ; i++){
+                                request.setAttribute(keysArray[i] ,  afficher.getData().get(keysArray[i]));
+                            }
                         }
-                        Set<String> cleSession = afficher.getSession().keySet();
-                        String[] tableau_cle_session = cleSession.toArray(new String[cleSession.size()]); 
-                        for(int i=0 ; i<tableau_cle_session.length ; i++){
-                            session.setAttribute(tableau_cle_session[i] ,  afficher.getSession().get(tableau_cle_session[i]));
+                        if(  afficher.getSession()!=null){
+
+                            Set<String> cleSession = afficher.getSession().keySet();
+                            String[] tableau_cle_session = cleSession.toArray(new String[cleSession.size()]); 
+                            for(int i=0 ; i<tableau_cle_session.length ; i++){
+                                session.setAttribute(tableau_cle_session[i] ,  afficher.getSession().get(tableau_cle_session[i]));
+                            }
+                        
                         }
-                      
-                        RequestDispatcher dispat = request.getRequestDispatcher(afficher.getView());
-                        dispat.forward(request, response);
+                            RequestDispatcher dispat = request.getRequestDispatcher(afficher.getView());
+                            dispat.forward(request, response);
+                        
 
                     }
 

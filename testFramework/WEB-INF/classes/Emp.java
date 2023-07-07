@@ -46,7 +46,7 @@ public class Emp{
         view.setSession(new HashMap<String , Object>());
         view.addSession("isConnected" , true);
         view.addSession("profil" , "admin");
-        System.out.println();
+        view.setIsJson(true); 
         view.addItem("liste" , "a :"+A+" b: "+B);
         view.setView("index.jsp");
         return view;
