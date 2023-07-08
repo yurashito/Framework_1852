@@ -51,14 +51,15 @@ public class FrontServlet extends HttpServlet{
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException ,Exception{
             PrintWriter out = response.getWriter();
-            HttpSession session= request.getSession();    
+            HttpSession session= request.getSession();   
             String url=request.getRequestURI().replace(request.getContextPath() , "");
-            
+             Gson gson = new Gson();
             Utilitaire function = new Utilitaire();    
 
             try {
                 
                 Class A = Class.forName(MappingUrls.get(url).getClassName());
+                Class restAPI= Class.forName("etu1852.annotation.RestAPI");
 
                 // rechercher toutes les methodes dans la class
                 Method[] methods = A.getDeclaredMethods();  
@@ -137,6 +138,11 @@ public class FrontServlet extends HttpServlet{
                                 break;
                             }
                         }
+
+                        if(method.isAnnotationPresent(restAPI)){
+                            String json= gson.toJson(method.invoke(objet));
+                            out.println(json);
+                        } else{ 
                         ModelView afficher= null;
                         Class classAuth= Class.forName("etu1852.annotation.Auth");
                         if(verificationExistence(method) &&  method.getAnnotation(classAuth)==session.getAttribute(getServletConfig().getInitParameter("isConnected") )){
@@ -148,7 +154,7 @@ public class FrontServlet extends HttpServlet{
 
                         if(afficher.getIsJson()){
                             out.println("transformation 000000en json");
-                            Gson gson = new Gson();
+                           
                             String json = gson.toJson(afficher.getData());
                             out.println(json);
                             request.setAttribute("json" ,  json);
@@ -170,9 +176,9 @@ public class FrontServlet extends HttpServlet{
                             }
                         
                         }
-                            RequestDispatcher dispat = request.getRequestDispatcher(afficher.getView());
-                            dispat.forward(request, response);
-                        
+                        RequestDispatcher dispat = request.getRequestDispatcher(afficher.getView());
+                        dispat.forward(request, response);
+                    }
 
                     }
 
